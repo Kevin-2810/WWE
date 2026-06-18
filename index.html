@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IRON REIGN WRESTLING — Arena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ================= TOKENS ================= */
+:root{
+  --void:#0a0a0d;
+  --steel:#15161b;
+  --steel-2:#1d1f26;
+  --chrome:#c9ccd3;
+  --chrome-dim:#7d818c;
+  --molten:#ff4d1a;
+  --molten-2:#ffae00;
+  --blood:#c81e3a;
+  --white:#f4f3ef;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--void);
+  color:var(--white);
+  font-family:'Inter',sans-serif;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+h1,h2,h3,.display{
+  font-family:'Anton',sans-serif;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+}
+.eyebrow{
+  font-family:'Oswald',sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.35em;
+  font-size:.72rem;
+  color:var(--molten-2);
+}
+a{color:inherit;}
+::selection{background:var(--molten); color:#000;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+}
+
+.grain{
+  position:fixed; inset:0; pointer-events:none; z-index:500; opacity:.05; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+nav{
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1.1rem clamp(1.2rem,4vw,3rem);
+  background:linear-gradient(to bottom, rgba(10,10,13,.95), rgba(10,10,13,0));
+  backdrop-filter:blur(2px);
+}
+.brand{
+  font-family:'Anton',sans-serif; font-size:1.3rem; letter-spacing:.06em;
+  display:flex; align-items:center; gap:.5rem;
+}
+.brand .spark{color:var(--molten);}
+nav ul{display:flex; gap:clamp(1rem,2vw,2.2rem); list-style:none;}
+nav a{
+  font-family:'Oswald',sans-serif; font-size:.82rem; text-transform:uppercase; letter-spacing:.12em;
+  text-decoration:none; color:var(--chrome); transition:color .25s;
+  position:relative; padding-bottom:4px;
+}
+nav a::after{
+  content:''; position:absolute; left:0; bottom:0; width:0; height:2px; background:var(--molten);
+  transition:width .25s;
+}
+nav a:hover{color:var(--white);}
+nav a:hover::after{width:100%;}
+
+.hero{
+  position:relative; height:100vh; min-height:640px;
+  display:flex; align-items:center; justify-content:center;
+  perspective:900px; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 35%, #1a1b22 0%, #0a0a0d 70%);
+}
+.tunnel{
+  position:absolute; inset:0; margin:auto; width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  transform-style:preserve-3d;
+}
+.ring{
+  position:absolute; border:2px solid rgba(255,77,26,.35);
+  border-radius:6px;
+  width:80vw; max-width:1100px; aspect-ratio:16/8.5;
+  transform-style:preserve-3d;
+  animation:tunnelPulse 3.2s ease-in-out infinite;
+}
+.ring::before{
+  content:''; position:absolute; inset:0; border-radius:6px;
+  box-shadow:inset 0 0 60px rgba(255,77,26,.15);
+}
+.ring.r1{transform:translateZ(0px) scale(1); opacity:.9;}
+.ring.r2{transform:translateZ(-160px) scale(.82); opacity:.6; animation-delay:.3s;}
+.ring.r3{transform:translateZ(-320px) scale(.64); opacity:.4; animation-delay:.6s;}
+.ring.r4{transform:translateZ(-480px) scale(.46); opacity:.25; animation-delay:.9s;}
+@keyframes tunnelPulse{
+  0%,100%{border-color:rgba(255,77,26,.25); box-shadow:0 0 10px rgba(255,77,26,.08);}
+  50%{border-color:rgba(255,174,0,.55); box-shadow:0 0 50px rgba(255,174,0,.25);}
+}
+
+.spotlight{
+  position:absolute; top:-20%; left:50%; width:60vw; height:140%;
+  background:conic-gradient(from 180deg at 50% 0%, transparent 35%, rgba(255,255,255,.06) 45%, rgba(255,174,0,.14) 50%, rgba(255,255,255,.06) 55%, transparent 65%);
+  transform:translateX(-50%) rotate(0deg);
+  animation:sweep 7s ease-in-out infinite;
+  pointer-events:none;
+  mix-blend-mode:screen;
+}
+@keyframes sweep{
+  0%,100%{transform:translateX(-50%) rotate(-18deg);}
+  50%{transform:translateX(-50%) rotate(18deg);}
+}
+
+.hero-content{
+  position:relative; z-index:10; text-align:center; padding:0 1.2rem; transform:translateZ(60px);
+}
+.hero-content .eyebrow{display:block; margin-bottom:.8rem;}
+.hero h1{
+  font-size:clamp(2.6rem, 9vw, 7rem); line-height:.95;
+  background:linear-gradient(180deg, #fff 0%, var(--chrome) 55%, #8a8d96 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:0 0 60px rgba(255,150,50,.25);
+}
+.hero h1 .accent{
+  background:linear-gradient(180deg, var(--molten-2), var(--molten));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero p.sub{
+  font-family:'Oswald',sans-serif; color:var(--chrome); max-width:520px; margin:1.1rem auto 2rem;
+  font-size:1.02rem; letter-spacing:.02em; line-height:1.5;
+}
+.hero-ctas{display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;}
+.btn{
+  font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.1em; font-size:.85rem; font-weight:600;
+  padding:.95rem 1.8rem; border-radius:3px; cursor:pointer; border:2px solid transparent;
+  transition:transform .2s, box-shadow .2s, background .2s;
+}
+.btn-primary{
+  background:linear-gradient(135deg, var(--molten-2), var(--molten));
+  color:#160a04;
+  box-shadow:0 8px 30px rgba(255,77,26,.35);
+}
+.btn-primary:hover{transform:translateY(-3px); box-shadow:0 14px 40px rgba(255,120,30,.5);}
+.btn-ghost{
+  background:transparent; border-color:rgba(201,204,211,.4); color:var(--chrome);
+}
+.btn-ghost:hover{border-color:var(--white); color:var(--white); transform:translateY(-3px);}
+
+.scroll-cue{
+  position:absolute; bottom:2rem; left:50%; transform:translateX(-50%);
+  font-family:'Oswald',sans-serif; font-size:.7rem; letter-spacing:.3em; color:var(--chrome-dim);
+  display:flex; flex-direction:column; align-items:center; gap:.4rem; z-index:10;
+}
+.scroll-cue .line{width:1px; height:32px; background:linear-gradient(var(--molten), transparent); animation:dropline 1.6s ease-in-out infinite;}
+@keyframes dropline{0%{transform:scaleY(0); transform-origin:top;} 50%{transform:scaleY(1); transform-origin:top;} 50.01%{transform-origin:bottom;} 100%{transform:scaleY(0); transform-origin:bottom;}}
+
+#emberCanvas{position:absolute; inset:0; z-index:5; pointer-events:none;}
+
+section{padding:clamp(4rem,8vw,7rem) clamp(1.2rem,5vw,4rem); position:relative;}
+.section-head{max-width:720px; margin:0 auto 3rem; text-align:center;}
+.section-head h2{font-size:clamp(2rem,5vw,3.2rem); margin-top:.6rem;}
+.section-head p{font-family:'Oswald',sans-serif; color:var(--chrome-dim); margin-top:.8rem; font-size:1rem;}
+.divider{
+  width:64px; height:3px; background:linear-gradient(90deg,var(--molten),var(--molten-2)); margin:0 auto; border-radius:2px;
+}
+
+.roster-wrap{background:var(--steel); border-top:1px solid rgba(255,255,255,.05); border-bottom:1px solid rgba(255,255,255,.05);}
+.roster-grid{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.6rem; max-width:1320px; margin:0 auto;
+  perspective:1200px;
+}
+.wcard{
+  position:relative; background:var(--steel-2); border-radius:10px; overflow:hidden;
+  border:1px solid rgba(255,255,255,.07);
+  transform-style:preserve-3d; transition:transform .12s ease-out, box-shadow .25s;
+  cursor:pointer;
+}
+.wcard:hover{box-shadow:0 25px 60px -10px rgba(255,77,26,.35), 0 0 0 1px rgba(255,174,0,.25);}
+.wcard .art{
+  position:relative; height:220px; display:flex; align-items:end; justify-content:center;
+  background:radial-gradient(circle at 50% 20%, var(--card-c2,#2a2d36), var(--card-c1,#111216) 75%);
+  transform:translateZ(20px);
+}
+.wcard .art svg{filter:drop-shadow(0 12px 18px rgba(0,0,0,.5));}
+.wcard .ribbon{
+  position:absolute; top:10px; left:10px; font-family:'Oswald',sans-serif; font-size:.62rem; letter-spacing:.15em;
+  text-transform:uppercase; padding:.3rem .55rem; border-radius:3px; background:rgba(0,0,0,.45); color:var(--molten-2);
+  border:1px solid rgba(255,174,0,.3);
+}
+.wcard .info{padding:1rem 1.1rem 1.2rem; transform:translateZ(10px);}
+.wcard .info .name{font-family:'Anton',sans-serif; font-size:1.25rem; letter-spacing:.02em; line-height:1.05;}
+.wcard .info .style{font-family:'Oswald',sans-serif; color:var(--molten-2); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; margin-top:.25rem;}
+.stat-row{display:flex; gap:.5rem; margin-top:.85rem;}
+.stat{flex:1; text-align:center; background:rgba(255,255,255,.03); border-radius:4px; padding:.4rem 0;}
+.stat .v{font-family:'Anton',sans-serif; font-size:1rem; color:var(--white);}
+.stat .l{font-family:'Oswald',sans-serif; font-size:.55rem; letter-spacing:.1em; color:var(--chrome-dim); text-transform:uppercase;}
+
+.matchmaker{max-width:1100px; margin:0 auto;}
+.mm-panel{
+  background:linear-gradient(155deg, var(--steel-2), var(--steel));
+  border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:clamp(1.4rem,4vw,3rem);
+  box-shadow:0 30px 70px -20px rgba(0,0,0,.6);
+}
+.mm-type-toggle{display:flex; gap:.7rem; justify-content:center; margin-bottom:2.2rem; flex-wrap:wrap;}
+.mm-type-btn{
+  font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.1em; font-size:.8rem; font-weight:600;
+  padding:.7rem 1.3rem; border-radius:30px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.03);
+  color:var(--chrome); cursor:pointer; transition:all .2s;
+}
+.mm-type-btn.active{
+  background:linear-gradient(135deg,var(--molten-2),var(--molten)); color:#160a04; border-color:transparent;
+  box-shadow:0 6px 24px rgba(255,77,26,.4);
+}
+
+.fighter-select-row{display:grid; grid-template-columns:1fr auto 1fr; gap:1.5rem; align-items:center;}
+.vs-badge{
+  font-family:'Anton',sans-serif; font-size:2rem; color:var(--molten); text-align:center;
+  text-shadow:0 0 20px rgba(255,77,26,.6);
+}
+.fighter-pick{text-align:center;}
+.fighter-pick .preview{
+  height:370px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:1rem;
+  background:radial-gradient(circle at 50% 25%, var(--card-c2,#2a2d36), var(--card-c1,#111216) 75%);
+  border:1px solid rgba(255,255,255,.08); position:relative; overflow:hidden;
+  transition:box-shadow .3s;
+}
+.fighter-pick .preview .profile-img{
+  width:100%; height:100%; object-fit:cover; object-position:center 18%;
+}
+.fighter-pick .pname{font-family:'Anton',sans-serif; font-size:1.3rem; margin-top:.2rem;}
+.fighter-pick .pstyle{font-family:'Oswald',sans-serif; font-size:.72rem; color:var(--molten-2); letter-spacing:.1em; text-transform:uppercase;}
+
+input[type=range].fselect{
+  width:100%; margin-top:1rem; -webkit-appearance:none; appearance:none; height:6px; border-radius:4px;
+  background:linear-gradient(90deg, var(--molten), var(--molten-2));
+  outline:none; cursor:pointer;
+}
+input[type=range].fselect::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none; width:22px; height:22px; border-radius:50%;
+  background:var(--white); border:3px solid var(--molten); cursor:grab; box-shadow:0 2px 8px rgba(0,0,0,.4);
+}
+input[type=range].fselect::-moz-range-thumb{
+  width:22px; height:22px; border-radius:50%; background:var(--white); border:3px solid var(--molten); cursor:grab;
+}
+
+.rumble-extra{display:none; margin-top:1.6rem;}
+.rumble-extra.active{display:block;}
+.rumble-pool{display:flex; flex-wrap:wrap; gap:.55rem; justify-content:center; margin-top:.8rem;}
+.pool-chip{
+  font-family:'Oswald',sans-serif; font-size:.78rem; padding:.5rem 1rem; border-radius:30px;
+  border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.03); color:var(--chrome); cursor:pointer; transition:all .2s;
+  user-select:none;
+}
+.pool-chip.selected{background:linear-gradient(135deg,var(--molten-2),var(--molten)); color:#160a04; border-color:transparent;}
+.rumble-hint{font-family:'Oswald',sans-serif; font-size:.75rem; color:var(--chrome-dim); text-align:center; margin-top:.6rem;}
+
+.fight-cta{display:flex; justify-content:center; margin-top:2.4rem;}
+.btn-fight{
+  font-family:'Anton',sans-serif; font-size:1.3rem; letter-spacing:.05em; padding:1.05rem 3.2rem; border-radius:6px;
+  background:linear-gradient(135deg,var(--blood),#7c0f24); color:#fff; border:none; cursor:pointer;
+  box-shadow:0 10px 35px rgba(200,30,58,.45); transition:transform .15s, box-shadow .15s;
+  position:relative; overflow:hidden;
+}
+.btn-fight:hover{transform:translateY(-3px) scale(1.02); box-shadow:0 18px 45px rgba(200,30,58,.6);}
+.btn-fight:active{transform:translateY(0) scale(.98);}
+.btn-fight:disabled{opacity:.55; cursor:not-allowed; transform:none;}
+
+.arena-stage{
+  position:relative; min-height:120px; margin-top:2.6rem; border-radius:14px; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 0%, #1c1d24, #0a0a0d 80%);
+  border:1px solid rgba(255,255,255,.06);
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  transition:min-height .4s ease;
+}
+.arena-stage.live{min-height:420px;}
+.arena-idle-msg{font-family:'Oswald',sans-serif; color:var(--chrome-dim); font-size:.9rem; padding:2rem;}
+
+.clash-vs{
+  display:flex; align-items:center; gap:2.4rem; opacity:0; transform:scale(.8);
+}
+.clash-vs.show{animation:clashIn .5s cubic-bezier(.2,.9,.3,1.3) forwards;}
+@keyframes clashIn{to{opacity:1; transform:scale(1);}}
+.clash-fighter{width:130px; height:130px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 50% 25%, var(--card-c2,#2a2d36), var(--card-c1,#111216) 75%);
+  border:3px solid rgba(255,174,0,.5); box-shadow:0 0 40px rgba(255,77,26,.35); overflow:hidden;
+}
+.clash-fighter .profile-img{
+  width:100%; height:100%; object-fit:cover; object-position:center 18%;
+}
+.clash-fighter.shakeL{animation:shakeL .4s ease-in-out infinite;}
+.clash-fighter.shakeR{animation:shakeR .4s ease-in-out infinite;}
+@keyframes shakeL{0%,100%{transform:translateX(0) rotate(0);} 50%{transform:translateX(8px) rotate(-4deg);}}
+@keyframes shakeR{0%,100%{transform:translateX(0) rotate(0);} 50%{transform:translateX(-8px) rotate(4deg);}}
+.clash-bolt{font-family:'Anton',sans-serif; font-size:3rem; color:var(--molten-2); text-shadow:0 0 30px var(--molten);}
+
+.winner-cinema{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; opacity:0; pointer-events:none;}
+.winner-cinema.show{opacity:1; pointer-events:auto; animation:fadeStage .25s ease;}
+@keyframes fadeStage{from{opacity:0;} to{opacity:1;}}
+.winner-spot{
+  position:absolute; top:-10%; left:50%; width:140%; height:160%; transform:translateX(-50%);
+  background:radial-gradient(ellipse at 50% 20%, rgba(255,200,80,.25), transparent 60%);
+  animation:spotPulse 1.8s ease-in-out infinite;
+}
+@keyframes spotPulse{0%,100%{opacity:.6;} 50%{opacity:1;}}
+.winner-belt-circle{
+  width:190px; height:190px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 50% 25%, var(--card-c2,#2a2d36), var(--card-c1,#111216) 75%);
+  border:4px solid var(--molten-2); box-shadow:0 0 70px rgba(255,174,0,.55), 0 0 0 8px rgba(255,77,26,.15);
+  position:relative; z-index:3; transform:translateY(40px) scale(.6); opacity:0; overflow:hidden;
+}
+.winner-belt-circle .profile-img{
+  width:100%; height:100%; object-fit:cover; object-position:center 18%;
+}
+.winner-cinema.show .winner-belt-circle{animation:beltRise .7s .15s cubic-bezier(.2,.8,.25,1.2) forwards;}
+@keyframes beltRise{to{transform:translateY(0) scale(1); opacity:1;}}
+.winner-name{
+  font-family:'Anton',sans-serif; font-size:clamp(1.8rem,5vw,2.8rem); margin-top:1.3rem; position:relative; z-index:3;
+  background:linear-gradient(180deg,#fff,var(--molten-2)); -webkit-background-clip:text; background-clip:text; color:transparent;
+  opacity:0; transform:translateY(14px);
+}
+.winner-cinema.show .winner-name{animation:nameUp .5s .5s ease forwards;}
+@keyframes nameUp{to{opacity:1; transform:translateY(0);}}
+.winner-tag{font-family:'Oswald',sans-serif; letter-spacing:.3em; font-size:.78rem; color:var(--chrome); margin-top:.4rem; opacity:0; position:relative; z-index:3;}
+.winner-cinema.show .winner-tag{animation:nameUp .5s .65s ease forwards;}
+.match-method{font-family:'Oswald',sans-serif; font-size:.85rem; color:var(--chrome-dim); margin-top:.6rem; opacity:0; position:relative; z-index:3;}
+.winner-cinema.show .match-method{animation:nameUp .5s .8s ease forwards;}
+.rematch-btn{
+  margin-top:1.6rem; font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.1em; font-size:.78rem;
+  padding:.6rem 1.4rem; border-radius:30px; border:1px solid rgba(255,255,255,.25); background:rgba(0,0,0,.3); color:var(--white);
+  cursor:pointer; opacity:0; position:relative; z-index:3; transition:border-color .2s;
+}
+.winner-cinema.show .rematch-btn{animation:nameUp .5s .95s ease forwards;}
+.rematch-btn:hover{border-color:var(--molten-2);}
+
+#confettiCanvas, #fireworkCanvas{position:absolute; inset:0; z-index:2; pointer-events:none;}
+
+footer{
+  text-align:center; padding:2.6rem 1rem; font-family:'Oswald',sans-serif; color:var(--chrome-dim); font-size:.8rem;
+  border-top:1px solid rgba(255,255,255,.06); letter-spacing:.05em;
+}
+footer .fnote{color:var(--chrome-dim); opacity:.6; font-size:.72rem; margin-top:.4rem;}
+
+.sound-toggle{
+  position:fixed; bottom:1.4rem; right:1.4rem; z-index:300; width:50px; height:50px; border-radius:50%;
+  background:rgba(20,20,24,.85); border:1px solid rgba(255,174,0,.35); color:var(--molten-2);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; backdrop-filter:blur(6px);
+  transition:transform .2s, border-color .2s; font-size:1.2rem;
+}
+.sound-toggle:hover{transform:scale(1.08); border-color:var(--molten-2);}
+
+@media (max-width:760px){
+  .fighter-select-row{grid-template-columns:1fr; gap:1rem;}
+  .vs-badge{order:2;}
+  .clash-vs{gap:1.2rem;}
+  .clash-fighter{width:90px; height:90px;}
+}
+
+.roster-actions{
+  max-width:1320px; margin:1.4rem auto 0; text-align:center;
+}
+.load-more-btn{
+  font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.16em;
+  font-size:.78rem; font-weight:600; padding:.9rem 1.6rem; border-radius:999px;
+  border:1px solid rgba(255,174,0,.35); background:rgba(255,174,0,.08);
+  color:var(--white); cursor:pointer; transition:transform .2s, background .2s, box-shadow .2s;
+}
+.load-more-btn:hover{
+  transform:translateY(-2px); background:rgba(255,174,0,.14);
+  box-shadow:0 12px 30px rgba(255,77,26,.18);
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<nav>
+  <div class="brand" style="display: flex; align-items: center; gap: 0.5rem;">
+    <span class="spark">
+      <img src="./assets/wwe.png" alt="WWE" style="width: 40px; height: 40px;">
+    </span>
+    WWE
+  </div>
+  <ul>
+    <li><a href="#roster">Wrestlers</a></li>
+    <li><a href="#matchmaker">Match Maker</a></li>
+  </ul>
+</nav>
+
+<section class="hero" id="hero">
+  <canvas id="emberCanvas"></canvas>
+  <div class="spotlight"></div>
+  <div class="tunnel">
+    <div class="ring r4"></div>
+    <div class="ring r3"></div>
+    <div class="ring r2"></div>
+    <div class="ring r1"></div>
+  </div>
+  <div class="hero-content">
+    <span class="eyebrow">Friday Night Carnage · Season 04</span>
+    <h1>ROYAL <span class="accent">RUMBLE</span></h1>
+    <p class="sub">Thirty original champions. One ring. Build the match, pull the lever, and let the arena decide who walks out a legend.</p>
+    <div class="hero-ctas">
+      <button class="btn btn-primary" onclick="document.getElementById('matchmaker').scrollIntoView({behavior:'smooth'})">Build a Match</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('roster').scrollIntoView({behavior:'smooth'})">Meet the Wrestlers</button>
+    </div>
+  </div>
+  <div class="scroll-cue"><div class="line"></div>SCROLL</div>
+</section>
+
+<section class="roster-wrap" id="roster">
+  <div class="section-head">
+    <span class="eyebrow">The Locker Room</span>
+    <h2>Iron Reign Wrestlers</h2>
+    <div class="divider"></div>
+    <p>Ten original competitors, each built for a different kind of war. Tilt a card to see them move.</p>
+  </div>
+  <div class="roster-grid" id="rosterGrid"></div>
+  <div class="roster-actions">
+    <button class="load-more-btn" id="loadMoreBtn">Load More Wrestlers</button>
+  </div>
+</section>
+
+<section id="matchmaker">
+  <div class="section-head">
+    <span class="eyebrow">Card Of The Night</span>
+    <h2>Build The Match</h2>
+    <div class="divider"></div>
+    <p>Slide to pick your competitors, choose a stipulation, and throw the bell.</p>
+  </div>
+
+  <div class="matchmaker">
+    <div class="mm-panel">
+      <div class="mm-type-toggle">
+        <button class="mm-type-btn active" data-type="singles">Singles Match</button>
+        <button class="mm-type-btn" data-type="rumble">Royal Rumble</button>
+      </div>
+
+      <div id="singlesMode">
+        <div class="fighter-select-row">
+          <div class="fighter-pick side-a">
+            <div class="preview" id="previewA"></div>
+            <div class="pname" id="nameA"></div>
+            <div class="pstyle" id="styleA"></div>
+            <input type="range" min="0" max="9" value="0" class="fselect" id="sliderA">
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="fighter-pick side-b">
+            <div class="preview" id="previewB"></div>
+            <div class="pname" id="nameB"></div>
+            <div class="pstyle" id="styleB"></div>
+            <input type="range" min="0" max="9" value="1" class="fselect" id="sliderB">
+          </div>
+        </div>
+      </div>
+
+      <div id="rumbleMode" class="rumble-extra">
+        <p class="rumble-hint">All wrestlers enter the Royal Rumble automatically. One survivor wins.</p>
+        <div class="rumble-pool" id="rumblePool"></div>
+      </div>
+
+      <div class="fight-cta">
+        <button class="btn-fight" id="fightBtn">RING THE BELL</button>
+      </div>
+
+      <div class="arena-stage" id="arenaStage">
+        <div class="arena-idle-msg" id="arenaIdle">The ring is waiting. Set your match above.</div>
+        <div class="clash-vs" id="clashVs">
+          <div class="clash-fighter" id="clashA"></div>
+          <div class="clash-bolt">💥</div>
+          <div class="clash-fighter" id="clashB"></div>
+        </div>
+        <canvas id="confettiCanvas"></canvas>
+        <canvas id="fireworkCanvas"></canvas>
+        <div class="winner-cinema" id="winnerCinema">
+          <div class="winner-spot"></div>
+          <div class="winner-belt-circle" id="winnerArt"></div>
+          <div class="winner-name" id="winnerName"></div>
+          <div class="winner-tag">NEW IRON REIGN CHAMPION</div>
+          <div class="match-method" id="matchMethod"></div>
+          <button class="rematch-btn" id="rematchBtn">Run It Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  IRON REIGN WRESTLING — a fictional promotion built for demo purposes.
+  <div class="fnote">All wrestlers, names, and artwork are original and not affiliated with any real promotion or performer.</div>
+</footer>
+
+<div class="sound-toggle" id="soundToggle" title="Toggle sound">🔊</div>
+
+<script>
+const ROSTER = [
+  {name:"John Cena", style:"High-Flyer", power:78, speed:97, c1:"#0c1c2e", c2:"#1c4a7a", accent:"#4fd1ff", finisher:"Tempest Driver", method:"pinfall", image:"./assets/johncena.png"},
+  {name:"Brock Lesner", style:"Powerhouse", power:99, speed:48, c1:"#241008", c2:"#7a3a1c", accent:"#ff8a3d", finisher:"Foundation Slam", method:"pinfall", image:"./assets/brock.png"},
+  {name:"Kane", style:"Technical", power:70, speed:74, c1:"#101a14", c2:"#1f5c3a", accent:"#4dffa6", finisher:"Calder Lock", method:"submission", image:"./assets/kane.png"},
+  {name:"Triple H", style:"Brawler", power:88, speed:66, c1:"#1f0d0f", c2:"#7a1c2e", accent:"#ff4d6a", finisher:"Steel Curtain", method:"pinfall", image:"./assets/tripleh.png"},
+  {name:"Rey Mysterio", style:"Hardcore", power:93, speed:55, c1:"#15120a", c2:"#5c4a1c", accent:"#e0c34d", finisher:"Junkyard Drop", method:"countout", image:"./assets/reymysterio.png"},
+  {name:"Batista", style:"Striker", power:73, speed:90, c1:"#0c1822", c2:"#1c3a5c", accent:"#7fd6ff", finisher:"Frostbite Kick", method:"pinfall", image:"./assets/batista.png"},
+  {name:"Undertaker", style:"Showman", power:75, speed:80, c1:"#1a0c22", c2:"#5c1c7a", accent:"#d68aff", finisher:"Vega Vertigo", method:"pinfall", image:"./assets/undertaker.png"},
+  {name:"Big Show", style:"Submission", power:81, speed:60, c1:"#100a12", c2:"#3a1c5c", accent:"#a98aff", finisher:"Iron Vise", method:"submission", image:"./assets/bigshow.png"},
+  {name:"Boogeyman", style:"Trickster", power:64, speed:92, c1:"#0a1410", c2:"#1c5c3a", accent:"#5dffb0", finisher:"Hexed Reversal", method:"DQ-proof pin", image:"./assets/boogeyman.png"},
+  {name:"The Great Khali", style:"Powerhouse", power:96, speed:52, c1:"#121008", c2:"#5c3a1c", accent:"#ffb14d", finisher:"Atlas Press", method:"pinfall", image:"./assets/khali.png"},
+  {name:"Randy Ortan", style:"High-Flyer", power:78, speed:97, c1:"#0c1c2e", c2:"#1c4a7a", accent:"#4fd1ff", finisher:"Tempest Driver", method:"pinfall", image:"./assets/randyortan.png"},
+  {name:"Shawn Michaels", style:"Powerhouse", power:99, speed:48, c1:"#241008]", c2:"#7a3a1c]", accent:"#ff8a3d]", finisher:"Foundation Slam]", method:"pinfall]", image:"./assets/shawn.png"},
+
+  {name:"Mark Henry", style:"Showman", power:75, speed:80, c1:"#1a0c22", c2:"#5c1c7a", accent:"#d68aff", finisher:"Vega Vertigo", method:"pinfall", image:"./assets/henry.png"},
+  {name:"Big Daddy V", style:"Submission", power:81, speed:60, c1:"#100a12", c2:"#3a1c5c", accent:"#a98aff", finisher:"Iron Vise", method:"submission", image:"./assets/bigdaddyv.png"},
+  {name:"Miz", style:"Trickster", power:64, speed:92, c1:"#0a1410", c2:"#1c5c3a", accent:"#5dffb0", finisher:"Hexed Reversal", method:"DQ-proof pin", image:"./assets/miz.png"},
+  {name:"Braun Strowman", style:"Powerhouse", power:96, speed:52, c1:"#121008", c2:"#5c3a1c", accent:"#ffb14d", finisher:"Atlas Press", method:"pinfall", image:"./assets/braun.png"},
+  {name:"Roman Reigns", style:"Striker", power:73, speed:90, c1:"#0c1822", c2:"#1c3a5c", accent:"#7fd6ff", finisher:"Frostbite Kick", method:"pinfall", image:"./assets/roman.png"},
+  {name:"Seth Rollins", style:"Showman", power:75, speed:80, c1:"#1a0c22", c2:"#5c1c7a", accent:"#d68aff", finisher:"Vega Vertigo", method:"pinfall", image:"./assets/seth.png"},
+  {name:"Dean Ambrose", style:"Submission", power:81, speed:60, c1:"#100a12", c2:"#3a1c5c", accent:"#a98aff", finisher:"Iron Vise", method:"submission", image:"./assets/ambrose.png"},
+  {name:"Umanga", style:"Trickster", power:64, speed:92, c1:"#0a1410", c2:"#1c5c3a", accent:"#5dffb0", finisher:"Hexed Reversal", method:"DQ-proof pin", image:"./assets/umanga.png"},
+  {name:"Rock", style:"Powerhouse", power:96, speed:52, c1:"#121008", c2:"#5c3a1c", accent:"#ffb14d", finisher:"Atlas Press", method:"pinfall", image:"./assets/rock.png"},
+  {name:"Sheamus", style:"High-Flyer", power:78, speed:97, c1:"#0c1c2e", c2:"#1c4a7a", accent:"#4fd1ff", finisher:"Tempest Driver", method:"pinfall", image:"./assets/sheamus.png"},
+  {name:"AJ Styles", style:"Powerhouse", power:99, speed:48, c1:"#241008]", c2:"#7a3a1c]", accent:"#ff8a3d]", finisher:"Foundation Slam]", method:"pinfall]", image:"./assets/ajstyle.png"},
+  {name:"Chris Jericho", style:"Striker", power:73, speed:90, c1:"#0c1822", c2:"#1c3a5c", accent:"#7fd6ff", finisher:"Frostbite Kick", method:"pinfall", image:"./assets/jericho.png"},
+  {name:"Cody Rhodes", style:"Showman", power:75, speed:80, c1:"#1a0c22", c2:"#5c1c7a", accent:"#d68aff", finisher:"Vega Vertigo", method:"pinfall", image:"./assets/codyrhodes.png"},
+  {name:"CM Punk", style:"Submission", power:81, speed:60, c1:"#100a12", c2:"#3a1c5c", accent:"#a98aff", finisher:"Iron Vise", method:"submission", image:"./assets/cmpunk.png"},
+  {name:"Goldberg", style:"Trickster", power:64, speed:92, c1:"#0a1410", c2:"#1c5c3a", accent:"#5dffb0", finisher:"Hexed Reversal", method:"DQ-proof pin", image:"./assets/goldberg.png"},
+  {name:"Booker T", style:"Powerhouse", power:96, speed:52, c1:"#121008", c2:"#5c3a1c", accent:"#ffb14d", finisher:"Atlas Press", method:"pinfall", image:"./assets/booker_t.png"},
+  {name:"Edge", style:"High-Flyer", power:78, speed:97, c1:"#0c1c2e", c2:"#1c4a7a", accent:"#4fd1ff", finisher:"Tempest Driver", method:"pinfall", image:"./assets/edge.png"},
+  {name:"Ryback", style:"Powerhouse", power:99, speed:48, c1:"#241008]", c2:"#7a3a1c]", accent:"#ff8a3d]", finisher:"Foundation Slam]", method:"pinfall]", image:"./assets/ryback.png"},
+
+  ];
+
+function cssId(name){return name.replace(/\s+/g,'-').toLowerCase();}
+function wrestlerSVG(w, size=110){
+  return `
+  <svg width="${size}" height="${size}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g-${cssId(w.name)}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${w.accent}"/>
+        <stop offset="100%" stop-color="${w.c2}"/>
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="46" fill="none" stroke="${w.accent}" stroke-opacity="0.35" stroke-width="2"/>
+    <path d="M28 88 C28 62 36 50 50 50 C64 50 72 62 72 88 Z" fill="url(#g-${cssId(w.name)})" stroke="${w.accent}" stroke-width="1.5"/>
+    <circle cx="50" cy="34" r="14" fill="url(#g-${cssId(w.name)})" stroke="${w.accent}" stroke-width="1.5"/>
+    <rect x="38" y="30" width="24" height="6" fill="${w.accent}" opacity="0.85"/>
+    <path d="M28 70 C20 64 16 54 18 44" fill="none" stroke="${w.accent}" stroke-width="6" stroke-linecap="round"/>
+    <path d="M72 70 C80 64 84 54 82 44" fill="none" stroke="${w.accent}" stroke-width="6" stroke-linecap="round"/>
+    <rect x="34" y="72" width="32" height="8" rx="2" fill="#161616" stroke="${w.accent}" stroke-width="1"/>
+    <circle cx="50" cy="76" r="4" fill="${w.accent}"/>
+  </svg>`;
+}
+function profileMarkup(w, size=120, cls=''){
+  return `<img class="profile-img ${cls}" src="${w.image || ''}" alt="${w.name}" width="${size}" height="${size}" loading="lazy" />`;
+}
+
+const rosterGrid = document.getElementById('rosterGrid');
+const loadMoreBtn = document.getElementById('loadMoreBtn');
+const VISIBLE_STEP = 10;
+let visibleRosterCount = VISIBLE_STEP;
+
+function createRosterCard(w){
+  const card = document.createElement('div');
+  card.className = 'wcard';
+  card.style.setProperty('--card-c1', w.c1);
+  card.style.setProperty('--card-c2', w.c2);
+  card.innerHTML = `
+    <div class="art">
+      <span class="ribbon">${w.style}</span>
+      ${profileMarkup(w, 180)}
+    </div>
+    <div class="info">
+      <div class="name">${w.name}</div>
+      <div class="style">Finisher: ${w.finisher}</div>
+      <div class="stat-row">
+        <div class="stat"><div class="v">${w.power}</div><div class="l">Power</div></div>
+        <div class="stat"><div class="v">${w.speed}</div><div class="l">Speed</div></div>
+      </div>
+    </div>
+  `;
+  card.addEventListener('mousemove', (e)=>{
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left)/r.width - 0.5;
+    const y = (e.clientY - r.top)/r.height - 0.5;
+    card.style.transform = `rotateY(${x*16}deg) rotateX(${-y*16}deg) translateY(-4px)`;
+  });
+  card.addEventListener('mouseleave', ()=>{
+    card.style.transform = 'rotateY(0) rotateX(0) translateY(0)';
+  });
+  return card;
+}
+
+function renderRoster(){
+  rosterGrid.innerHTML = '';
+  ROSTER.slice(0, visibleRosterCount).forEach((w)=>{
+    rosterGrid.appendChild(createRosterCard(w));
+  });
+
+  if(visibleRosterCount >= ROSTER.length){
+    loadMoreBtn.style.display = 'none';
+  } else {
+    loadMoreBtn.style.display = 'inline-block';
+    loadMoreBtn.textContent = `Load More Wrestlers (${Math.min(VISIBLE_STEP, ROSTER.length - visibleRosterCount)} more)`;
+  }
+}
+
+loadMoreBtn.addEventListener('click', ()=>{
+  visibleRosterCount = Math.min(visibleRosterCount + VISIBLE_STEP, ROSTER.length);
+  renderRoster();
+});
+
+renderRoster();
+
+let soundOn = true;
+let actx = null;
+function ensureCtx(){ if(!actx) actx = new (window.AudioContext||window.webkitAudioContext)(); return actx; }
+
+function beep(freq, dur, type='sine', vol=0.25, delay=0){
+  if(!soundOn) return;
+  const ctx = ensureCtx();
+  const t0 = ctx.currentTime + delay;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type; osc.frequency.setValueAtTime(freq, t0);
+  gain.gain.setValueAtTime(vol, t0);
+  gain.gain.exponentialRampToValueAtTime(0.001, t0+dur);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(t0); osc.stop(t0+dur);
+}
+function bellSound(){
+  [880,1320,1760].forEach((f,i)=>beep(f, 1.1, 'triangle', 0.18, i*0.02));
+  beep(440, 1.4, 'sine', 0.2, 0);
+}
+function impactSound(){
+  if(!soundOn) return;
+  const ctx = ensureCtx();
+  const bufferSize = ctx.sampleRate * 0.18;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufferSize); }
+  const noise = ctx.createBufferSource(); noise.buffer = buffer;
+  const filter = ctx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=900;
+  const gain = ctx.createGain(); gain.gain.value=0.5;
+  noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+  noise.start();
+  beep(120,0.25,'square',0.3,0);
+}
+function crowdRoar(){
+  if(!soundOn) return;
+  const ctx = ensureCtx();
+  const dur = 1.6;
+  const bufferSize = ctx.sampleRate * dur;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for(let i=0;i<bufferSize;i++){
+    const env = Math.sin((i/bufferSize)*Math.PI);
+    data[i] = (Math.random()*2-1) * env * 0.6;
+  }
+  const noise = ctx.createBufferSource(); noise.buffer = buffer;
+  const filter = ctx.createBiquadFilter(); filter.type='bandpass'; filter.frequency.value=1200; filter.Q.value=0.6;
+  const gain = ctx.createGain(); gain.gain.value=0.45;
+  noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+  noise.start();
+}
+function fanfare(){
+  const notes=[523,659,784,1046];
+  notes.forEach((f,i)=>beep(f,0.5,'sawtooth',0.14,i*0.13));
+}
+
+document.getElementById('soundToggle').addEventListener('click', (e)=>{
+  soundOn = !soundOn;
+  e.currentTarget.textContent = soundOn ? '🔊' : '🔇';
+  if(soundOn) ensureCtx();
+});
+
+const emberCanvas = document.getElementById('emberCanvas');
+const ectx = emberCanvas.getContext('2d');
+function fitCanvas(){
+  emberCanvas.width = emberCanvas.parentElement.clientWidth;
+  emberCanvas.height = emberCanvas.parentElement.clientHeight;
+}
+fitCanvas();
+window.addEventListener('resize', fitCanvas);
+let embers = Array.from({length:60}, ()=>spawnEmber());
+function spawnEmber(){
+  return {
+    x: Math.random()*emberCanvas.width,
+    y: emberCanvas.height + Math.random()*100,
+    r: 1+Math.random()*2.4,
+    speed: 0.4+Math.random()*1.1,
+    drift: (Math.random()-0.5)*0.6,
+    life: Math.random()*1,
+    hue: Math.random()<0.5 ? '255,170,60' : '255,90,30'
+  };
+}
+function tickEmbers(){
+  ectx.clearRect(0,0,emberCanvas.width,emberCanvas.height);
+  embers.forEach(p=>{
+    p.y -= p.speed; p.x += p.drift; p.life += 0.004;
+    const alpha = Math.max(0, 1 - p.y/emberCanvas.height) * 0.8;
+    ectx.beginPath();
+    ectx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ectx.fillStyle = `rgba(${p.hue},${alpha})`;
+    ectx.shadowColor = `rgba(${p.hue},0.8)`;
+    ectx.shadowBlur = 6;
+    ectx.fill();
+    if(p.y < -10 || p.x < -10 || p.x > emberCanvas.width+10){
+      Object.assign(p, spawnEmber());
+    }
+  });
+  requestAnimationFrame(tickEmbers);
+}
+tickEmbers();
+
+let matchType = 'singles';
+const sliderA = document.getElementById('sliderA');
+const sliderB = document.getElementById('sliderB');
+const previewA = document.getElementById('previewA');
+const previewB = document.getElementById('previewB');
+const nameA = document.getElementById('nameA');
+const nameB = document.getElementById('nameB');
+const styleA = document.getElementById('styleA');
+const styleB = document.getElementById('styleB');
+
+sliderA.max = Math.max(0, ROSTER.length - 1);
+sliderB.max = Math.max(0, ROSTER.length - 1);
+
+function renderPreview(slider, previewEl, nameEl, styleEl){
+  const w = ROSTER[+slider.value];
+  previewEl.style.setProperty('--card-c1', w.c1);
+  previewEl.style.setProperty('--card-c2', w.c2);
+  previewEl.innerHTML = profileMarkup(w, 170);
+  nameEl.textContent = w.name;
+  styleEl.textContent = w.style;
+}
+sliderA.addEventListener('input', ()=>renderPreview(sliderA,previewA,nameA,styleA));
+sliderB.addEventListener('input', ()=>renderPreview(sliderB,previewB,nameB,styleB));
+renderPreview(sliderA,previewA,nameA,styleA);
+renderPreview(sliderB,previewB,nameB,styleB);
+
+document.querySelectorAll('.mm-type-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.mm-type-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    matchType = btn.dataset.type;
+    document.getElementById('singlesMode').style.display = matchType==='singles' ? 'block' : 'none';
+    document.getElementById('rumbleMode').classList.toggle('active', matchType==='rumble');
+    resetStage();
+  });
+});
+
+const rumblePool = document.getElementById('rumblePool');
+ROSTER.forEach((w)=>{
+  const chip = document.createElement('div');
+  chip.className = 'pool-chip selected';
+  chip.textContent = w.name;
+  rumblePool.appendChild(chip);
+});
+
+const fightBtn = document.getElementById('fightBtn');
+const arenaStage = document.getElementById('arenaStage');
+const arenaIdle = document.getElementById('arenaIdle');
+const clashVs = document.getElementById('clashVs');
+const clashA = document.getElementById('clashA');
+const clashB = document.getElementById('clashB');
+const winnerCinema = document.getElementById('winnerCinema');
+const winnerArt = document.getElementById('winnerArt');
+const winnerName = document.getElementById('winnerName');
+const matchMethod = document.getElementById('matchMethod');
+const rematchBtn = document.getElementById('rematchBtn');
+
+function resetStage(){
+  arenaStage.classList.remove('live');
+  arenaIdle.style.display='block';
+  clashVs.classList.remove('show');
+  clashVs.style.display='none';
+  winnerCinema.classList.remove('show');
+  fightBtn.disabled = false;
+  fightBtn.textContent = 'RING THE BELL';
+}
+rematchBtn.addEventListener('click', resetStage);
+
+fightBtn.addEventListener('click', ()=>{
+  ensureCtx();
+  let contenders;
+  if(matchType==='singles'){
+    const ia = +sliderA.value, ib = +sliderB.value;
+    if(ia === ib){ alert('Pick two different wrestlers for a singles match.'); return; }
+    contenders = [ROSTER[ia], ROSTER[ib]];
+  } else {
+    contenders = [...ROSTER];
+  }
+  runMatch(contenders);
+});
+
+function runMatch(contenders){
+  fightBtn.disabled = true;
+  fightBtn.textContent = 'MATCH IN PROGRESS…';
+  arenaIdle.style.display='none';
+  arenaStage.classList.add('live');
+  winnerCinema.classList.remove('show');
+
+  bellSound();
+
+  if(matchType==='singles'){
+    const [a,b] = contenders;
+    clashA.style.setProperty('--card-c1',a.c1); clashA.style.setProperty('--card-c2',a.c2);
+    clashB.style.setProperty('--card-c1',b.c1); clashB.style.setProperty('--card-c2',b.c2);
+    clashA.innerHTML = profileMarkup(a, 130, 'circle');
+    clashB.innerHTML = profileMarkup(b, 130, 'circle');
+    clashVs.style.display='flex';
+    requestAnimationFrame(()=>clashVs.classList.add('show'));
+    clashA.classList.add('shakeL');
+    clashB.classList.add('shakeR');
+
+    let hits = 0;
+    const hitInterval = setInterval(()=>{ impactSound(); hits++; if(hits>=5) clearInterval(hitInterval); }, 380);
+  } else {
+    clashVs.style.display='none';
+  }
+
+  setTimeout(()=>{
+    const winner = contenders[Math.floor(Math.random()*contenders.length)];
+    announceWinner(winner);
+  }, 2400);
+}
+
+function announceWinner(winner){
+  clashVs.classList.remove('show');
+  clashVs.style.display='none';
+  winnerArt.style.setProperty('--card-c1', winner.c1);
+  winnerArt.style.setProperty('--card-c2', winner.c2);
+  winnerArt.innerHTML = profileMarkup(winner, 190, 'circle');
+  winnerName.textContent = winner.name;
+  matchMethod.textContent = `Wins via ${winner.method.toUpperCase()} with the ${winner.finisher}`;
+  winnerCinema.classList.add('show');
+
+  crowdRoar();
+  setTimeout(fanfare, 250);
+  launchConfetti();
+  launchFireworks(winner.accent);
+
+  fightBtn.disabled = false;
+  fightBtn.textContent = 'RING THE BELL';
+}
+
+const confettiCanvas = document.getElementById('confettiCanvas');
+const cctx = confettiCanvas.getContext('2d');
+const fireworkCanvas = document.getElementById('fireworkCanvas');
+const fctx = fireworkCanvas.getContext('2d');
+
+function fitOverlayCanvases(){
+  [confettiCanvas, fireworkCanvas].forEach(c=>{
+    c.width = arenaStage.clientWidth;
+    c.height = arenaStage.clientHeight;
+  });
+}
+fitOverlayCanvases();
+window.addEventListener('resize', fitOverlayCanvases);
+new ResizeObserver(fitOverlayCanvases).observe(arenaStage);
+
+let confettiParticles = [];
+function launchConfetti(){
+  fitOverlayCanvases();
+  confettiParticles = Array.from({length:140}, ()=>({
+    x: Math.random()*confettiCanvas.width,
+    y: -20 - Math.random()*100,
+    w: 6+Math.random()*6,
+    h: 8+Math.random()*8,
+    vy: 2+Math.random()*3,
+    vx: (Math.random()-0.5)*2.4,
+    rot: Math.random()*Math.PI,
+    vr: (Math.random()-0.5)*0.3,
+    color: ['#ff4d1a','#ffae00','#c9ccd3','#ff4d6a','#4fd1ff'][Math.floor(Math.random()*5)],
+    life: 0
+  }));
+  animateConfetti();
+}
+function animateConfetti(){
+  cctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  let alive = false;
+  confettiParticles.forEach(p=>{
+    p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life++;
+    if(p.y < confettiCanvas.height + 30) alive = true;
+    cctx.save();
+    cctx.translate(p.x,p.y);
+    cctx.rotate(p.rot);
+    cctx.fillStyle = p.color;
+    cctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    cctx.restore();
+  });
+  if(alive && confettiParticles.length) requestAnimationFrame(animateConfetti);
+  else cctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+}
+
+let fireworkBursts = [];
+function launchFireworks(accent){
+  fitOverlayCanvases();
+  fireworkBursts = [];
+  const burstCount = 4;
+  for(let i=0;i<burstCount;i++){
+    setTimeout(()=>{
+      const cx = fireworkCanvas.width*(0.2+Math.random()*0.6);
+      const cy = fireworkCanvas.height*(0.2+Math.random()*0.4);
+      spawnBurst(cx,cy, accent);
+      impactSoundLight();
+    }, i*420);
+  }
+  animateFireworks();
+}
+function impactSoundLight(){
+  if(!soundOn) return;
+  beep(700+Math.random()*400, 0.3, 'sine', 0.12, 0);
+}
+function spawnBurst(cx,cy,accent){
+  const colors = [accent, '#ffae00', '#ff4d1a', '#ffffff'];
+  const n = 36;
+  for(let i=0;i<n;i++){
+    const ang = (Math.PI*2*i)/n;
+    const speed = 1.6+Math.random()*2.4;
+    fireworkBursts.push({
+      x:cx, y:cy,
+      vx: Math.cos(ang)*speed, vy: Math.sin(ang)*speed,
+      life:0, max: 50+Math.random()*20,
+      color: colors[Math.floor(Math.random()*colors.length)]
+    });
+  }
+}
+function animateFireworks(){
+  fctx.clearRect(0,0,fireworkCanvas.width,fireworkCanvas.height);
+  let alive = false;
+  fireworkBursts.forEach(p=>{
+    if(p.life > p.max) return;
+    alive = true;
+    p.x += p.vx; p.y += p.vy; p.vy += 0.045; p.life++;
+    const alpha = Math.max(0, 1 - p.life/p.max);
+    fctx.beginPath();
+    fctx.arc(p.x,p.y,2.2,0,Math.PI*2);
+    fctx.fillStyle = p.color;
+    fctx.globalAlpha = alpha;
+    fctx.shadowColor = p.color;
+    fctx.shadowBlur = 8;
+    fctx.fill();
+    fctx.globalAlpha = 1;
+  });
+  if(alive) requestAnimationFrame(animateFireworks);
+  else fctx.clearRect(0,0,fireworkCanvas.width,fireworkCanvas.height);
+}
+
+document.getElementById('rumbleMode').style.display = 'none';
+</script>
+</body>
+</html>
